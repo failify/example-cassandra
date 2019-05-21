@@ -37,33 +37,23 @@ public class FailifyHelper {
     }
 
     public static CqlSession getCQLSession(FailifyRunner runner, int numOfContactPoints) {
-        CqlSessionBuilder builder = CqlSession.builder().withLocalDatacenter("dc1");
+        CqlSessionBuilder builder = CqlSession.builder().withLocalDatacenter("datacenter1");
         for (int i=1; i<=numOfContactPoints; i++) builder.addContactPoint(new InetSocketAddress("n" + i, 9042));
         return builder.build();
     }
 
     public static void waitForCluster(FailifyRunner runner, int numOfNodes) throws RuntimeEngineException {
         logger.info("Waiting for cluster to start up ...");
-
-
         boolean started = false;
         int attempt = 0;
         do {
-            if (attempt++ >= 15) {
-                throw new RuntimeEngineException("Timeout in waiting for cluster startup");
-            }
+            if (attempt++ >= 15) throw new RuntimeEngineException("Timeout in waiting for cluster startup");
             try {
                 Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                throw new RuntimeEngineException("waitForCluster sleep thread got interrupted");
-            }
-
+            } catch (InterruptedException e) { throw new RuntimeEngineException("waitForCluster sleep thread got interrupted"); }
             try {
-                getCQLSession(runner, numOfNodes);
-                started = true;
-            } catch (Exception e) {
-                // possible place to debug log something
-            }
+                getCQLSession(runner, numOfNodes); started = true;
+            } catch (Exception e) {}
         } while (!started);
     }
 }
