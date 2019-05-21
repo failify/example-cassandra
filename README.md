@@ -1,6 +1,7 @@
 This repo contains sample [Failify](https://failify.io) test cases for Cassandra. To make things easier for illustration
-purposes, the build folder from v3.11.4 of cassandra built on Debian Stretch is included in the repo so anyone who wants to
-try the test cases is not required to build Cassandra    from scratch.
+purposes, the required files from the build directory of v3.11.4 of cassandra built on Debian Stretch (using 
+``ant artifacts`` command) is included in the repo
+so anyone who wants to try the test cases is not required to build Cassandra from scratch.
 
 To run the test cases, first you need to install the following dependencies:
 - Docker 1.13+
