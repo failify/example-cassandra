@@ -5,6 +5,7 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import io.failify.FailifyRunner;
 import io.failify.dsl.entities.Deployment;
 import io.failify.dsl.entities.PathAttr;
+import io.failify.dsl.entities.ServiceType;
 import io.failify.exceptions.RuntimeEngineException;
 import io.failify.execution.ULimit;
 import org.slf4j.Logger;
@@ -22,18 +23,16 @@ public class FailifyHelper {
         String dir = "apache-cassandra-" + version;
         StringJoiner seeds = new StringJoiner(",");
         for (int i=1; i<=numOfNodes; i++) seeds.add("n" + i);
-        Deployment.Builder builder = Deployment.builder("example-cassandra")
+        return Deployment.builder("example-cassandra")
             .withService("cassandra")
-                .applicationPath("../cassandra-3.11.4-build/" + dir + "-bin.tar.gz", "/cassandra", PathAttr.COMPRESSED)
-                .workDir("/cassandra/" + dir).startCommand("bin/cassandra -R")
-                .dockerImageName("failify/cassandra:1.0").dockerFileAddress("docker/Dockerfile", true)
-                .logDirectory("/cassandra/" + dir + "/logs")
-                .applicationPath("config/cassandra.yaml", "/cassandra/" + dir + "/conf/cassandra.yaml",
+                .appPath("../cassandra-3.11.4-build/" + dir + "-bin.tar.gz", "/cassandra", PathAttr.COMPRESSED)
+                .workDir("/cassandra/" + dir).startCmd("bin/cassandra -R")
+                .dockerImgName("failify/cassandra:1.0").dockerFileAddr("docker/Dockerfile", true)
+                .logDir("/cassandra/" + dir + "/logs").serviceType(ServiceType.JAVA)
+                .appPath("config/cassandra.yaml", "/cassandra/" + dir + "/conf/cassandra.yaml",
                         new HashMap<String, String>() {{ put("CASSANDRA_SEEDS", seeds.toString());}})
-                .applicationPath("config/cassandra-env.sh", "/cassandra/" + dir + "/conf/cassandra-env.sh")
-                .ulimit(ULimit.MEMLOCK, -1).and();
-        for (int i=1; i<=numOfNodes; i++) builder.withNode("n" + i, "cassandra").and();
-        return builder.build();
+                .appPath("config/cassandra-env.sh", "/cassandra/" + dir + "/conf/cassandra-env.sh")
+                .ulimit(ULimit.MEMLOCK, -1).and().nodeInstances(numOfNodes, "n", "cassandra", false).build();
     }
 
     public static CqlSession getCQLSession(FailifyRunner runner, int numOfContactPoints) {
