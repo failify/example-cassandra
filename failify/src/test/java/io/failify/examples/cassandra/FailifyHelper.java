@@ -27,7 +27,7 @@ public class FailifyHelper {
             .withService("cassandra")
                 .appPath("../cassandra-3.11.4-build/" + dir + "-bin.tar.gz", "/cassandra", PathAttr.COMPRESSED)
                 .workDir("/cassandra/" + dir).startCmd("bin/cassandra -R")
-                .dockerImgName("failify/cassandra:1.0").dockerFileAddr("docker/Dockerfile", true)
+                .dockerImg("failify/cassandra:1.0").dockerFile("docker/Dockerfile", true)
                 .logDir("/cassandra/" + dir + "/logs").serviceType(ServiceType.JAVA)
                 .appPath("config/cassandra.yaml", "/cassandra/" + dir + "/conf/cassandra.yaml",
                         new HashMap<String, String>() {{ put("CASSANDRA_SEEDS", seeds.toString());}})
